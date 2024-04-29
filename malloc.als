@@ -45,6 +45,8 @@ one sig HeapHeader extends Word {
 
 one sig HeapFooter extends Word {}
 
+sig HeaderWord extends NormalWord {}
+
 /*
 sig HeaderWord extends Word{
   inBlock: lone Block,
@@ -91,19 +93,40 @@ pred OneBlockPerWord {
 
 pred mm_init {
   one Block
+  no HeaderWord
   Block.status = Free
   Block.words = NormalWord
   OneBlockPerWord
   HeapHeader.first = Block
+  no prede
+  no succ
   //#NormalWord > 4
 }
 
-/*
-pred mm_malloc [x:int] {
-  
+pred can_malloc[b:Block, size:Int] {
+  b.status = Free
+  int #b.words >= int size + int 1
+  no b1:Block | #b1.words >= size + 1 and b1 in b.^prede
 }
-*/
-run mm_init for 8 but exactly 8 Word
+
+pred allocate [b:Block, x:Int] {
+ one disj z, y:Block | z not in Block and y not in Block => {
+      Block' = Block + z + y
+      z.words' + y.words' = b.words
+      #z.words' = x + 1
+      z.status' = Alloc
+      y.status' = Free
+    }  
+}
+
+pred mm_malloc [x:Int] {
+  one b:Block | can_malloc[b, x] => {
+   b.status' = Alloc
+  }
+}
+
+run {mm_init
+        } for 8 but exactly 8 Word
 run {
 some b: Block | #b.words > 1
 } for 3 but exactly 3 Block
