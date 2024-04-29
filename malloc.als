@@ -32,17 +32,20 @@ one sig Free extends Status {}
 
 abstract sig Word {
   pre: lone Word,
-  next: lone Word,
+  nex: lone Word,
 }
 
 sig NormalWord extends Word {
   inBlock: lone Block,  
 }
 
-one sig HeapHeader extends Word {}
+one sig HeapHeader extends Word {
+  first: lone Block
+}
 
 one sig HeapFooter extends Word {}
 
+/*
 sig HeaderWord extends Word{
   inBlock: lone Block,
   size: Int
@@ -51,7 +54,7 @@ sig HeaderWord extends Word{
 sig FooterWord extends Word{
   inBlock: lone Block,
   size: Int
-}
+}*/
 
 // prede: relation Block -> Block 
 // succ: relation Block -> Block
@@ -62,24 +65,48 @@ sig Block {
   status: Status, 
   prede: lone Block, 
   succ: lone Block,
-  words: set Word
+  words: set NormalWord
 }
 
-// Note" "pred" is a keyword in Alloy, so we'll use "prede"
-// instead. 
-
-// "fact"s in Alloy are constraints that are always true. 
-pred succession {
+fact WordSuccession {
   // A more verbose way to write the following statement:
   //all a, b : Block | a->b in prede <=> b->a in succ
 
   // Relational operator: ~ is transpose (switch order)
   ~prede = succ
-  ~pre = next
+  ~pre = nex
+  all disj x,y : NormalWord | y in x.^nex or y in x.^pre  // connected 
+  no HeapHeader.pre
+  all x: NormalWord | x in HeapHeader.^nex
+  no HeapFooter.nex
+  all x: NormalWord | x in HeapFooter.^pre
 }
 
-run succession for 5
+// Each word corresponds to only one block
 
+pred OneBlockPerWord {
+  all w:NormalWord, b:Block | w->b in inBlock <=> b->w in words
+ // ~words = inBlock
+}
+
+pred mm_init {
+  one Block
+  Block.status = Free
+  Block.words = NormalWord
+  OneBlockPerWord
+  HeapHeader.first = Block
+  //#NormalWord > 4
+}
+
+/*
+pred mm_malloc [x:int] {
+  
+}
+*/
+run mm_init for 8 but exactly 8 Word
+run {
+some b: Block | #b.words > 1
+} for 3 but exactly 3 Block
 // Only consecutive words can point to same block
 
 
