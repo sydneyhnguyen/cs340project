@@ -105,15 +105,15 @@ pred mm_init {
 
 pred can_malloc[b:Block, size:Int] {
   b.status = Free
-  int #b.words >= int size + int 1
-  no b1:Block | #b1.words >= size + 1 and b1 in b.^prede
+  #b.words >= add[size,1]
+  //no b1:Block | #b1.words >= add[size,1] and b1 in b.^prede
 }
 
 pred allocate [b:Block, x:Int] {
  one disj z, y:Block | z not in Block and y not in Block => {
       Block' = Block + z + y
       z.words' + y.words' = b.words
-      #z.words' = x + 1
+      #z.words' = add[x,1]
       z.status' = Alloc
       y.status' = Free
     }  
@@ -125,11 +125,12 @@ pred mm_malloc [x:Int] {
   }
 }
 
-run {mm_init
-        } for 8 but exactly 8 Word
+run {mm_init and after mm_malloc[3]
+        } for 8 but exactly 8 Word, 5 Int
+
 run {
-some b: Block | #b.words > 1
-} for 3 but exactly 3 Block
+
+} for 4 Int
 // Only consecutive words can point to same block
 
 
