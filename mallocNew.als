@@ -110,32 +110,28 @@ pred can_malloc[b:Block, size:Int] {
 }
 
 pred allocate [b:Block, x:Int] {
-    //let inList = HeapHeader.first
-//    let newBlock =  Block |
-//    {
-//	Block' = b + newBlock
-//    	b.status' = Alloc
-//       newBlock.status' = Alloc
-//     }
-/*
- some disj z, y:Block | z not in Block and y not in Block => {
-//	let inList = heapHeader.next^next
-//	// if space to allocate is enough, allocate whole block
-//	// else, split block to allocate only necessary block
-      Block' = Block + z + y
-      z.words' + y.words' = b.words
-      #z.words' = add[x,1]
-      z.status' = Alloc
-      y.status' = Free
-    }  */
+   // Case 1: No splitting required 
   not (#(b.words) > add[x, 1]) => {
   b.status' = Alloc
   }
+
+   //Case 2: Splitting required, new block created 
   #(b.words) > add[x, 1] => {
     b.status' = Alloc
     one y:Block' | y not in Block and Block' = Block + y and {
       y.status'=Free
-      
+	//Change one word to belong to new block instead of existing
+	// TODO: change to iterate for specific size of allocation	
+      some w: b.words |
+      {
+		b.words' = b.words - w
+		y.words' = y.words + w
+		inBlock' = inBlock - w->b + w->y
+	}
+	// New block succession & predecessor relationships updated 
+      b.succ' = y
+      y.prede' = b 
+      first' = first
     }
   }
   
@@ -146,14 +142,8 @@ pred mm_malloc [x:Int] {
   some b:Block | can_malloc[b, x] and {
    allocate[b,x]
   //b.status' = Alloc
-   
-   b.words' = b.words
-   prede' = prede
-   succ' = succ 
-   first' = first
-   inBlock' = inBlock
-pre' = pre
-nex' = nex
+   pre' = pre
+   nex' = nex
  }
 }
 
