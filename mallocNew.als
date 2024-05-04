@@ -129,16 +129,31 @@ pred allocate [b:Block, x:Int] {
       y.status' = Free
     }  */
   not (#(b.words) > add[x, 1]) => {
-  b.status' = Alloc
+    b.status' = Alloc
   }
   #(b.words) > add[x, 1] => {
     b.status' = Alloc
-    one y:Block' | y not in Block and Block' = Block + y and {
-      y.status'=Free
-      
+    //#(b.words') = add[x,1]
+    //no b.words'
+    one disj y,z:Block' | y not in Block and y in Block' and z in Block' and z not in Block and {
+      y.status' = Alloc
+      //no b.words''
+      Block'' = Block + y + z -b
+      b.words = y.words' + z.words'
+      #(y.words') = add[x,1]
+      z.status'=Free
+      z.words' = b.words - y.words'
+      all w:NormalWord, c:Block | w->c in inBlock' <=> c->w in words'
     }
   }
+}
+
+pred split[b,y,z:Block, x:Int] {
+  y.status' = Alloc
+  z.status' = Free
+  b.words = y.words' + z.words'
   
+
 }
 
 pred mm_malloc [x:Int] {
