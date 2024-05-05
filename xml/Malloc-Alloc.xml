@@ -1,0 +1,325 @@
+<alloy builddate="2021-11-03T15:25:43.736Z">
+
+<instance bitwidth="5" maxseq="8" mintrace="1" maxtrace="10" command="Run run$1 for 8 but 5 int, exactly 8 Word" filename="C:\Users\tilly\cs340\cs340project\mallocNew.als" tracelength="3" backloop="2">
+
+<sig label="seq/Int" ID="0" parentID="1" builtin="yes">
+</sig>
+
+<sig label="Int" ID="1" parentID="2" builtin="yes">
+</sig>
+
+<sig label="String" ID="3" parentID="2" builtin="yes">
+</sig>
+
+<sig label="this/Alloc" ID="4" parentID="5" one="yes">
+   <atom label="Alloc$0"/>
+</sig>
+
+<sig label="this/Free" ID="6" parentID="5" one="yes">
+   <atom label="Free$0"/>
+</sig>
+
+<sig label="this/Status" ID="5" parentID="2" abstract="yes">
+</sig>
+
+<sig label="this/HeaderWord" ID="7" parentID="8">
+</sig>
+
+<sig label="this/NormalWord" ID="8" parentID="9">
+   <atom label="NormalWord$0"/>
+   <atom label="NormalWord$1"/>
+   <atom label="NormalWord$2"/>
+   <atom label="NormalWord$3"/>
+   <atom label="NormalWord$4"/>
+   <atom label="NormalWord$5"/>
+</sig>
+
+<field label="inBlock" ID="10" parentID="8" var="yes">
+   <tuple> <atom label="NormalWord$0"/> <atom label="Block$0"/> </tuple>
+   <tuple> <atom label="NormalWord$1"/> <atom label="Block$0"/> </tuple>
+   <tuple> <atom label="NormalWord$2"/> <atom label="Block$0"/> </tuple>
+   <tuple> <atom label="NormalWord$3"/> <atom label="Block$0"/> </tuple>
+   <tuple> <atom label="NormalWord$4"/> <atom label="Block$0"/> </tuple>
+   <tuple> <atom label="NormalWord$5"/> <atom label="Block$0"/> </tuple>
+   <types> <type ID="8"/> <type ID="11"/> </types>
+</field>
+
+<sig label="this/HeapHeader" ID="12" parentID="9" one="yes">
+   <atom label="HeapHeader$0"/>
+</sig>
+
+<sig label="this/HeapFooter" ID="13" parentID="9" one="yes">
+   <atom label="HeapFooter$0"/>
+</sig>
+
+<sig label="this/Word" ID="9" parentID="2" abstract="yes">
+</sig>
+
+<field label="pre" ID="14" parentID="9" var="yes">
+   <tuple> <atom label="HeapFooter$0"/> <atom label="NormalWord$2"/> </tuple>
+   <tuple> <atom label="NormalWord$0"/> <atom label="NormalWord$3"/> </tuple>
+   <tuple> <atom label="NormalWord$1"/> <atom label="NormalWord$5"/> </tuple>
+   <tuple> <atom label="NormalWord$2"/> <atom label="NormalWord$4"/> </tuple>
+   <tuple> <atom label="NormalWord$3"/> <atom label="NormalWord$1"/> </tuple>
+   <tuple> <atom label="NormalWord$4"/> <atom label="NormalWord$0"/> </tuple>
+   <tuple> <atom label="NormalWord$5"/> <atom label="HeapHeader$0"/> </tuple>
+   <types> <type ID="9"/> <type ID="9"/> </types>
+</field>
+
+<field label="nex" ID="15" parentID="9" var="yes">
+   <tuple> <atom label="HeapHeader$0"/> <atom label="NormalWord$5"/> </tuple>
+   <tuple> <atom label="NormalWord$0"/> <atom label="NormalWord$4"/> </tuple>
+   <tuple> <atom label="NormalWord$1"/> <atom label="NormalWord$3"/> </tuple>
+   <tuple> <atom label="NormalWord$2"/> <atom label="HeapFooter$0"/> </tuple>
+   <tuple> <atom label="NormalWord$3"/> <atom label="NormalWord$0"/> </tuple>
+   <tuple> <atom label="NormalWord$4"/> <atom label="NormalWord$2"/> </tuple>
+   <tuple> <atom label="NormalWord$5"/> <atom label="NormalWord$1"/> </tuple>
+   <types> <type ID="9"/> <type ID="9"/> </types>
+</field>
+
+<sig label="this/Block" ID="11" parentID="2" var="yes">
+   <atom label="Block$0"/>
+</sig>
+
+<field label="status" ID="16" parentID="11" var="yes">
+   <tuple> <atom label="Block$0"/> <atom label="Free$0"/> </tuple>
+   <types> <type ID="11"/> <type ID="5"/> </types>
+</field>
+
+<field label="prede" ID="17" parentID="11" var="yes">
+   <types> <type ID="11"/> <type ID="11"/> </types>
+</field>
+
+<field label="succ" ID="18" parentID="11" var="yes">
+   <types> <type ID="11"/> <type ID="11"/> </types>
+</field>
+
+<field label="words" ID="19" parentID="11" var="yes">
+   <tuple> <atom label="Block$0"/> <atom label="NormalWord$0"/> </tuple>
+   <tuple> <atom label="Block$0"/> <atom label="NormalWord$1"/> </tuple>
+   <tuple> <atom label="Block$0"/> <atom label="NormalWord$2"/> </tuple>
+   <tuple> <atom label="Block$0"/> <atom label="NormalWord$3"/> </tuple>
+   <tuple> <atom label="Block$0"/> <atom label="NormalWord$4"/> </tuple>
+   <tuple> <atom label="Block$0"/> <atom label="NormalWord$5"/> </tuple>
+   <types> <type ID="11"/> <type ID="8"/> </types>
+</field>
+
+<sig label="univ" ID="2" builtin="yes" var="yes">
+</sig>
+
+<skolem label="$mm_malloc_b" ID="20">
+   <tuple> <atom label="Block$0"/> </tuple>
+   <types> <type ID="11"/> </types>
+</skolem>
+
+</instance>
+<instance bitwidth="5" maxseq="8" mintrace="1" maxtrace="10" command="Run run$1 for 8 but 5 int, exactly 8 Word" filename="C:\Users\tilly\cs340\cs340project\mallocNew.als" tracelength="3" backloop="2">
+
+<sig label="seq/Int" ID="0" parentID="1" builtin="yes">
+</sig>
+
+<sig label="Int" ID="1" parentID="2" builtin="yes">
+</sig>
+
+<sig label="String" ID="3" parentID="2" builtin="yes">
+</sig>
+
+<sig label="this/Alloc" ID="4" parentID="5" one="yes">
+   <atom label="Alloc$0"/>
+</sig>
+
+<sig label="this/Free" ID="6" parentID="5" one="yes">
+   <atom label="Free$0"/>
+</sig>
+
+<sig label="this/Status" ID="5" parentID="2" abstract="yes">
+</sig>
+
+<sig label="this/HeaderWord" ID="7" parentID="8">
+</sig>
+
+<sig label="this/NormalWord" ID="8" parentID="9">
+   <atom label="NormalWord$0"/>
+   <atom label="NormalWord$1"/>
+   <atom label="NormalWord$2"/>
+   <atom label="NormalWord$3"/>
+   <atom label="NormalWord$4"/>
+   <atom label="NormalWord$5"/>
+</sig>
+
+<field label="inBlock" ID="10" parentID="8" var="yes">
+   <tuple> <atom label="NormalWord$0"/> <atom label="Block$2"/> </tuple>
+   <tuple> <atom label="NormalWord$1"/> <atom label="Block$2"/> </tuple>
+   <tuple> <atom label="NormalWord$2"/> <atom label="Block$1"/> </tuple>
+   <tuple> <atom label="NormalWord$3"/> <atom label="Block$2"/> </tuple>
+   <tuple> <atom label="NormalWord$4"/> <atom label="Block$1"/> </tuple>
+   <tuple> <atom label="NormalWord$5"/> <atom label="Block$2"/> </tuple>
+   <types> <type ID="8"/> <type ID="11"/> </types>
+</field>
+
+<sig label="this/HeapHeader" ID="12" parentID="9" one="yes">
+   <atom label="HeapHeader$0"/>
+</sig>
+
+<sig label="this/HeapFooter" ID="13" parentID="9" one="yes">
+   <atom label="HeapFooter$0"/>
+</sig>
+
+<sig label="this/Word" ID="9" parentID="2" abstract="yes">
+</sig>
+
+<field label="pre" ID="14" parentID="9" var="yes">
+   <tuple> <atom label="HeapFooter$0"/> <atom label="NormalWord$2"/> </tuple>
+   <tuple> <atom label="NormalWord$0"/> <atom label="NormalWord$3"/> </tuple>
+   <tuple> <atom label="NormalWord$1"/> <atom label="NormalWord$5"/> </tuple>
+   <tuple> <atom label="NormalWord$2"/> <atom label="NormalWord$4"/> </tuple>
+   <tuple> <atom label="NormalWord$3"/> <atom label="NormalWord$1"/> </tuple>
+   <tuple> <atom label="NormalWord$4"/> <atom label="NormalWord$0"/> </tuple>
+   <tuple> <atom label="NormalWord$5"/> <atom label="HeapHeader$0"/> </tuple>
+   <types> <type ID="9"/> <type ID="9"/> </types>
+</field>
+
+<field label="nex" ID="15" parentID="9" var="yes">
+   <tuple> <atom label="HeapHeader$0"/> <atom label="NormalWord$5"/> </tuple>
+   <tuple> <atom label="NormalWord$0"/> <atom label="NormalWord$4"/> </tuple>
+   <tuple> <atom label="NormalWord$1"/> <atom label="NormalWord$3"/> </tuple>
+   <tuple> <atom label="NormalWord$2"/> <atom label="HeapFooter$0"/> </tuple>
+   <tuple> <atom label="NormalWord$3"/> <atom label="NormalWord$0"/> </tuple>
+   <tuple> <atom label="NormalWord$4"/> <atom label="NormalWord$2"/> </tuple>
+   <tuple> <atom label="NormalWord$5"/> <atom label="NormalWord$1"/> </tuple>
+   <types> <type ID="9"/> <type ID="9"/> </types>
+</field>
+
+<sig label="this/Block" ID="11" parentID="2" var="yes">
+   <atom label="Block$1"/>
+   <atom label="Block$2"/>
+</sig>
+
+<field label="status" ID="16" parentID="11" var="yes">
+   <tuple> <atom label="Block$1"/> <atom label="Free$0"/> </tuple>
+   <tuple> <atom label="Block$2"/> <atom label="Alloc$0"/> </tuple>
+   <types> <type ID="11"/> <type ID="5"/> </types>
+</field>
+
+<field label="prede" ID="17" parentID="11" var="yes">
+   <tuple> <atom label="Block$1"/> <atom label="Block$2"/> </tuple>
+   <types> <type ID="11"/> <type ID="11"/> </types>
+</field>
+
+<field label="succ" ID="18" parentID="11" var="yes">
+   <tuple> <atom label="Block$2"/> <atom label="Block$1"/> </tuple>
+   <types> <type ID="11"/> <type ID="11"/> </types>
+</field>
+
+<field label="words" ID="19" parentID="11" var="yes">
+   <tuple> <atom label="Block$1"/> <atom label="NormalWord$2"/> </tuple>
+   <tuple> <atom label="Block$1"/> <atom label="NormalWord$4"/> </tuple>
+   <tuple> <atom label="Block$2"/> <atom label="NormalWord$0"/> </tuple>
+   <tuple> <atom label="Block$2"/> <atom label="NormalWord$1"/> </tuple>
+   <tuple> <atom label="Block$2"/> <atom label="NormalWord$3"/> </tuple>
+   <tuple> <atom label="Block$2"/> <atom label="NormalWord$5"/> </tuple>
+   <types> <type ID="11"/> <type ID="8"/> </types>
+</field>
+
+<sig label="univ" ID="2" builtin="yes" var="yes">
+</sig>
+
+<skolem label="$mm_malloc_b" ID="20">
+   <tuple> <atom label="Block$0"/> </tuple>
+   <types> <type ID="11"/> </types>
+</skolem>
+
+</instance>
+<instance bitwidth="5" maxseq="8" mintrace="1" maxtrace="10" command="Run run$1 for 8 but 5 int, exactly 8 Word" filename="C:\Users\tilly\cs340\cs340project\mallocNew.als" tracelength="3" backloop="2">
+
+<sig label="seq/Int" ID="0" parentID="1" builtin="yes">
+</sig>
+
+<sig label="Int" ID="1" parentID="2" builtin="yes">
+</sig>
+
+<sig label="String" ID="3" parentID="2" builtin="yes">
+</sig>
+
+<sig label="this/Alloc" ID="4" parentID="5" one="yes">
+   <atom label="Alloc$0"/>
+</sig>
+
+<sig label="this/Free" ID="6" parentID="5" one="yes">
+   <atom label="Free$0"/>
+</sig>
+
+<sig label="this/Status" ID="5" parentID="2" abstract="yes">
+</sig>
+
+<sig label="this/HeaderWord" ID="7" parentID="8">
+</sig>
+
+<sig label="this/NormalWord" ID="8" parentID="9">
+   <atom label="NormalWord$0"/>
+   <atom label="NormalWord$1"/>
+   <atom label="NormalWord$2"/>
+   <atom label="NormalWord$3"/>
+   <atom label="NormalWord$4"/>
+   <atom label="NormalWord$5"/>
+</sig>
+
+<field label="inBlock" ID="10" parentID="8" var="yes">
+   <types> <type ID="8"/> <type ID="11"/> </types>
+</field>
+
+<sig label="this/HeapHeader" ID="12" parentID="9" one="yes">
+   <atom label="HeapHeader$0"/>
+</sig>
+
+<sig label="this/HeapFooter" ID="13" parentID="9" one="yes">
+   <atom label="HeapFooter$0"/>
+</sig>
+
+<sig label="this/Word" ID="9" parentID="2" abstract="yes">
+</sig>
+
+<field label="pre" ID="14" parentID="9" var="yes">
+   <types> <type ID="9"/> <type ID="9"/> </types>
+</field>
+
+<field label="nex" ID="15" parentID="9" var="yes">
+   <types> <type ID="9"/> <type ID="9"/> </types>
+</field>
+
+<sig label="this/Block" ID="11" parentID="2" var="yes">
+   <atom label="Block$2"/>
+</sig>
+
+<field label="status" ID="16" parentID="11" var="yes">
+   <tuple> <atom label="Block$2"/> <atom label="Free$0"/> </tuple>
+   <types> <type ID="11"/> <type ID="5"/> </types>
+</field>
+
+<field label="prede" ID="17" parentID="11" var="yes">
+   <types> <type ID="11"/> <type ID="11"/> </types>
+</field>
+
+<field label="succ" ID="18" parentID="11" var="yes">
+   <types> <type ID="11"/> <type ID="11"/> </types>
+</field>
+
+<field label="words" ID="19" parentID="11" var="yes">
+   <types> <type ID="11"/> <type ID="8"/> </types>
+</field>
+
+<sig label="univ" ID="2" builtin="yes" var="yes">
+</sig>
+
+<skolem label="$mm_malloc_b" ID="20">
+   <tuple> <atom label="Block$0"/> </tuple>
+   <types> <type ID="11"/> </types>
+</skolem>
+
+</instance>
+
+<source filename="C:\Users\tilly\cs340\cs340project\mallocNew.als" content="abstract sig Status {} &#x000a;&#x000a;// extend works like in an object-oriented language. &#x000a;// Alloc is a subset of Status. Free is a subset of Status.&#x000a;// &quot;one&quot; here means there will only be one atom of each.&#x000a;one sig Alloc extends Status {}&#x000a;one sig Free extends Status {}&#x000a;&#x000a;// Sig for words&#x000a;&#x000a;abstract sig Word {&#x000a;  var pre: lone Word,&#x000a;  var nex: lone Word,&#x000a;}&#x000a;&#x000a;sig NormalWord extends Word {&#x000a;  var inBlock: lone Block,  &#x000a;}&#x000a;&#x000a;one sig HeapHeader extends Word {&#x000a;  //var first: lone Block&#x000a;}&#x000a;&#x000a;var sig Block {&#x000a;  var status: Status, &#x000a;  var prede: lone Block, &#x000a;  var succ: lone Block,&#x000a;  var words: set NormalWord&#x000a;}&#x000a;&#x000a;one sig HeapFooter extends Word {}&#x000a;&#x000a;sig HeaderWord extends NormalWord {}&#x000a;&#x000a;/*&#x000a;sig HeaderWord extends Word{&#x000a;  inBlock: lone Block,&#x000a;  size: Int&#x000a;}&#x000a;&#x000a;sig FooterWord extends Word{&#x000a;  inBlock: lone Block,&#x000a;  size: Int&#x000a;}*/&#x000a;&#x000a;// prede: relation Block -&gt; Block &#x000a;// succ: relation Block -&gt; Block&#x000a;&#x000a;// prede and succ are each a subset of Block x Block&#x000a;&#x000a;&#x000a;fact WordSuccession {&#x000a;  // A more verbose way to write the following statement:&#x000a;  //all a, b : Block | a-&gt;b in prede &lt;=&gt; b-&gt;a in succ&#x000a;&#x000a;  // Relational operator: ~ is transpose (switch order)&#x000a;  ~prede = succ&#x000a;  ~pre = nex&#x000a;  all disj x,y : NormalWord | y in x.^nex or y in x.^pre  // connected &#x000a;  no HeapHeader.pre&#x000a;  all x: NormalWord | x in HeapHeader.^nex&#x000a;  no HeapFooter.nex&#x000a;  all x: NormalWord | x in HeapFooter.^pre&#x000a;}&#x000a;&#x000a;// Each word corresponds to only one block&#x000a;&#x000a;pred OneBlockPerWord {&#x000a;  all w:NormalWord, b:Block | w-&gt;b in inBlock &lt;=&gt; b-&gt;w in words&#x000a; // ~words = inBlock&#x000a;}&#x000a;&#x000a;pred mm_init {&#x000a;  one Block&#x000a;  no HeaderWord&#x000a;  Block.status = Free&#x000a;  Block.words = NormalWord&#x000a;  OneBlockPerWord&#x000a;  no prede&#x000a;  no succ&#x000a;  //#NormalWord &gt; 4&#x000a;}&#x000a;&#x000a;pred can_malloc[b:Block, size:Int] {&#x000a;  b.status = Free&#x000a;  #b.words &gt;= add[size,1]&#x000a;  //no b1:Block | #b1.words &gt;= add[size,1] and b1 in b.^prede&#x000a;}&#x000a;&#x000a;pred allocate [b:Block, x:Int] {&#x000a;   // Case 1: No splitting required &#x000a;  not (#(b.words) &gt; add[x, 1]) =&gt; {&#x000a;    b.status&apos; = Alloc&#x000a;  }&#x000a;&#x000a;   //Case 2: Splitting required, new block created &#x000a;  #(b.words) &gt; add[x, 1] =&gt; {&#x000a;    //b.status&apos; = Alloc&#x000a;    //#(b.words&apos;) = add[x,1]&#x000a;    //no b.words&apos;&#x000a;    one disj y,z:Block&apos; | y not in Block and y in Block&apos; and z in Block&apos; and z not in Block and {&#x000a;      y.status&apos; = Alloc&#x000a;      z.status&apos;=Free&#x000a;      no b.words&apos;&#x000a;      Block&apos; = Block + y + z - b&#x000a;      #(y.words&apos;) = add[x,1]&#x000a;      b.words = y.words&apos; + z.words&apos;&#x000a;      z.words&apos; = b.words - y.words&apos;&#x000a;      inBlock&apos; = ~words&apos;&#x000a;&#x000a;      // Update block succession&#x000a;      succ&apos; = succ + y-&gt;z - b-&gt;b.succ + z-&gt;b.succ&#x000a;      prede&apos; = prede + z-&gt;y - b-&gt;b.prede + y-&gt;b.prede&#x000a;      &#x000a;      //Fix the order of allocated words&#x000a;      // There&apos;s no word in z that precedes a word in y&#x000a;      all w1:y.words&apos; | {&#x000a;        all w2:z.words&apos; | w2 not in w1.^pre&#x000a;      }&#x000a;    }&#x000a;  }&#x000a;}&#x000a;&#x000a;pred coalesce {&#x000a;  some disj b1,b2:Block | b2 = b1.succ and b1.status = Free and b2.status = Free =&gt; {&#x000a;    one x:Block&apos; | x not in Block and x in Block&apos; and {&#x000a;      status&apos; = status - b1-&gt;Free - b2-&gt;Free + x-&gt;Free&#x000a;      Block&apos; = Block - b1 - b2 + x&#x000a;      x.words&apos; = b1.words + b2.words&#x000a;    }&#x000a;  }&#x000a;}&#x000a;&#x000a;pred free {&#x000a;  one b1:Block | b1.status = Alloc and b1.status&apos; = Free&#x000a;}&#x000a;&#x000a;pred mm_malloc [x:Int] {&#x000a;-- preconditions&#x000a;  some b:Block | can_malloc[b, x] and {&#x000a;   allocate[b,x]&#x000a;  //b.status&apos; = Alloc&#x000a;   pre&apos; = pre&#x000a;   nex&apos; = nex&#x000a; }&#x000a;}&#x000a;&#x000a;run {mm_init and mm_malloc[3] and after free&#x000a;        } for 8 but exactly 8 Word, 5 Int&#x000a;&#x000a;run {&#x000a;&#x000a;} for 4 Int&#x000a;// Only consecutive words can point to same block&#x000a;&#x000a;&#x000a;// mm_init()&#x000a;&#x000a; &#x000a;&#x000a;"/>
+
+<source filename="\$alloy4$\models\util\integer.als" content="module util/integer&#x000a;&#x000a;/*&#x000a; * A collection of utility functions for using Integers in Alloy.&#x000a; * Note that integer overflows are silently truncated to the current bitwidth&#x000a; * using the 2&apos;s complement arithmetic, unless the &quot;forbid overfows&quot; option is&#x000a; * turned on, in which case only models that don&apos;t have any overflows are &#x000a; * analyzed. &#x000a; */&#x000a;&#x000a;fun add  [n1, n2: Int] : Int { this/plus[n1, n2] }&#x000a;fun plus [n1, n2: Int] : Int { n1 fun/add n2 }&#x000a;&#x000a;fun sub   [n1, n2: Int] : Int { this/minus[n1, n2] }&#x000a;fun minus [n1, n2: Int] : Int { n1 fun/sub n2 }&#x000a;&#x000a;fun mul [n1, n2: Int] : Int { n1 fun/mul n2 }&#x000a;&#x000a;/**&#x000a; * Performs the division with &quot;round to zero&quot; semantics, except the following 3 cases&#x000a; * 1) if a is 0, then it returns 0&#x000a; * 2) else if b is 0, then it returns 1 if a is negative and -1 if a is positive&#x000a; * 3) else if a is the smallest negative integer, and b is -1, then it returns a&#x000a; */&#x000a;fun div [n1, n2: Int] : Int { n1 fun/div n2 }&#x000a;&#x000a;/** answer is defined to be the unique integer that satisfies &quot;a = ((a/b)*b) + remainder&quot; */&#x000a;fun rem [n1, n2: Int] : Int { n1 fun/rem n2 }&#x000a;&#x000a;/** negate */&#x000a;fun negate [n: Int] : Int { 0 fun/sub n }&#x000a;&#x000a;/** equal to */&#x000a;pred eq [n1, n2: Int] { int[n1] = int[n2] }&#x000a;&#x000a;/** greater than */&#x000a;pred gt [n1, n2: Int] { n1 &gt; n2 }&#x000a;&#x000a;/** less then */&#x000a;pred lt [n1, n2: Int] { n1 &lt; n2 }&#x000a;&#x000a;/** greater than or equal */&#x000a;pred gte [n1, n2: Int] { n1 &gt;= n2 }&#x000a;&#x000a;/** less than or equal */&#x000a;pred lte [n1, n2: Int] { n1 &lt;= n2 }&#x000a;&#x000a;/** integer is zero */&#x000a;pred zero [n: Int] { n = 0 }&#x000a;&#x000a;/** positive */&#x000a;pred pos  [n: Int] { n &gt; 0 }&#x000a;&#x000a;/** negative */&#x000a;pred neg  [n: Int] { n &lt; 0 }&#x000a;&#x000a;/** non-positive */&#x000a;pred nonpos [n: Int] { n &lt;= 0 }&#x000a;&#x000a;/** non-negative */&#x000a;pred nonneg [n: Int] { n &gt;= 0 }&#x000a;&#x000a;/** signum (aka sign or sgn) */&#x000a;fun signum [n: Int] : Int { n&lt;0 =&gt; (0 fun/sub 1) else (n&gt;0 =&gt; 1 else 0) }&#x000a;&#x000a;/**&#x000a; * returns the ith element (zero-based) from the set s&#x000a; * in the ordering of &apos;next&apos;, which is a linear ordering&#x000a; * relation like that provided by util/ordering&#x000a; */&#x000a;fun int2elem[i: Int, next: univ-&gt;univ, s: set univ] : lone s {&#x000a;  {e: s | #^next.e = int i }&#x000a;}&#x000a;&#x000a;/**&#x000a; * returns the index of the element (zero-based) in the&#x000a; * ordering of next, which is a linear ordering relation&#x000a; * like that provided by util/ordering&#x000a; */&#x000a;fun elem2int[e: univ, next: univ-&gt;univ] : lone Int {&#x000a;  Int[#^next.e]&#x000a;}&#x000a;&#x000a;/** returns the largest integer in the current bitwidth */&#x000a;fun max:one Int { fun/max }&#x000a;&#x000a;/** returns the smallest integer in the current bitwidth */&#x000a;fun min:one Int { fun/min }&#x000a;&#x000a;/** maps each integer (except max) to the integer after it */&#x000a;fun next:Int-&gt;Int { fun/next }&#x000a;&#x000a;/** maps each integer (except min) to the integer before it */&#x000a;fun prev:Int-&gt;Int { ~next }&#x000a;&#x000a;/** given a set of integers, return the largest element */&#x000a;fun max [es: set Int]: lone Int { es - es.^prev }&#x000a;&#x000a;/** given a set of integers, return the smallest element */&#x000a;fun min [es: set Int]: lone Int { es - es.^next }&#x000a;&#x000a;/** given an integer, return all integers prior to it */&#x000a;fun prevs [e: Int]: set Int { e.^prev }&#x000a;&#x000a;/** given an integer, return all integers following it */&#x000a;fun nexts [e: Int]: set Int { e.^next }&#x000a;&#x000a;/** returns the larger of the two integers */&#x000a;fun larger [e1, e2: Int]: Int { let a=int[e1], b=int[e2] | (a&lt;b =&gt; b else a) }&#x000a;&#x000a;/** returns the smaller of the two integers */&#x000a;fun smaller [e1, e2: Int]: Int { let a=int[e1], b=int[e2] | (a&lt;b =&gt; a else b) }&#x000a;"/>
+
+</alloy>

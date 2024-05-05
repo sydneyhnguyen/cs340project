@@ -1,25 +1,3 @@
-/*
-
-All blocks are "alloc" or "free". 
-Blocks have at most one "predecessor"
-                             
-       HEAP        
-   +-----------+ 
-b0 |alloc 0b11 +
-   +-----------+ 
-b1 |    ???    |  
-   +-----------+ 
-b2 |free  0b?0 +
-   +-----------+ 
-
-The question: given that we don't know the allocation status of  ???, 
-is it possible for us to know if the following is true?
-    "There is some free block whose predecessor is allocated"
-*/
-
-
-// Descriptions of objects: "sig"
-// abstract: don't have any just Status, have the sub-sigs
 abstract sig Status {} 
 
 // extend works like in an object-oriented language. 
@@ -40,7 +18,14 @@ sig NormalWord extends Word {
 }
 
 one sig HeapHeader extends Word {
-  var first: lone Block
+  //var first: lone Block
+}
+
+var sig Block {
+  var status: Status, 
+  var prede: lone Block, 
+  var succ: lone Block,
+  var words: set NormalWord
 }
 
 one sig HeapFooter extends Word {}
@@ -63,12 +48,6 @@ sig FooterWord extends Word{
 
 // prede and succ are each a subset of Block x Block
 
-var sig Block {
-  var status: Status, 
-  var prede: lone Block, 
-  var succ: lone Block,
-  var words: set NormalWord
-}
 
 fact WordSuccession {
   // A more verbose way to write the following statement:
@@ -97,7 +76,6 @@ pred mm_init {
   Block.status = Free
   Block.words = NormalWord
   OneBlockPerWord
-  HeapHeader.first = Block
   no prede
   no succ
   //#NormalWord > 4
@@ -117,45 +95,48 @@ pred allocate [b:Block, x:Int] {
 
    //Case 2: Splitting required, new block created 
   #(b.words) > add[x, 1] => {
-    b.status' = Alloc
-<<<<<<< HEAD
+    //b.status' = Alloc
     //#(b.words') = add[x,1]
     //no b.words'
     one disj y,z:Block' | y not in Block and y in Block' and z in Block' and z not in Block and {
       y.status' = Alloc
-      //no b.words''
-      Block'' = Block + y + z -b
-      b.words = y.words' + z.words'
-      #(y.words') = add[x,1]
       z.status'=Free
+      no b.words'
+      Block' = Block + y + z - b
+      #(y.words') = add[x,1]
+      b.words = y.words' + z.words'
       z.words' = b.words - y.words'
-      all w:NormalWord, c:Block | w->c in inBlock' <=> c->w in words'
-=======
-    one y:Block' | y not in Block and Block' = Block + y and {
-      y.status'=Free
-	//Change one word to belong to new block instead of existing
-	// TODO: change to iterate for specific size of allocation	
-      some w: b.words |
-      {
-		b.words' = b.words - w
-		y.words' = y.words + w
-		inBlock' = inBlock - w->b + w->y
-	}
-	// New block succession & predecessor relationships updated 
-      b.succ' = y
-      y.prede' = b 
-      first' = first
->>>>>>> cf379753161852d5ba45bda6089c85e619cd4bbb
+      inBlock' = ~words'
+
+      // Update block succession
+      succ' = succ + y->z - b->b.succ + z->b.succ
+      prede' = prede + z->y - b->b.prede + y->b.prede
+      
+      //Fix the order of allocated words
+      // There's no word in z that precedes a word in y
+      all w1:y.words' | {
+        all w2:z.words' | w2 not in w1.^pre
+      }
     }
   }
 }
 
-pred split[b,y,z:Block, x:Int] {
-  y.status' = Alloc
-  z.status' = Free
-  b.words = y.words' + z.words'
-  
+pred coalesce {
+  some disj b1,b2:Block | b2 = b1.succ and b1.status = Free and b2.status = Free => {
+    one x:Block' | x not in Block and x in Block' and {
+      status' = status - b1->Free - b2->Free + x->Free
+      Block' = Block - b1 - b2 + x
+      x.words' = b1.words + b2.words
+    }
+  }
+}
 
+pred free {
+  one b1:Block | b1.status = Alloc and status' = status + b1->Free
+  //Block' = Block
+  //prede' = prede
+  //succ' = succ
+  //words' = words
 }
 
 pred mm_malloc [x:Int] {
@@ -168,9 +149,7 @@ pred mm_malloc [x:Int] {
  }
 }
 
-run 
-// some disj f1, f2: Block | {
-{mm_init and mm_malloc[3]
+run {mm_init and mm_malloc[3] and after free
         } for 8 but exactly 8 Word, 5 Int
 
 run {
