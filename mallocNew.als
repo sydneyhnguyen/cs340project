@@ -9,8 +9,8 @@ one sig Free extends Status {}
 // Sig for words
 
 abstract sig Word {
-  var pre: lone Word,
-  var nex: lone Word,
+  pre: lone Word,
+  nex: lone Word,
 }
 
 sig NormalWord extends Word {
@@ -66,8 +66,8 @@ fact WordSuccession {
 // Each word corresponds to only one block
 
 pred OneBlockPerWord {
-  all w:NormalWord, b:Block | w->b in inBlock <=> b->w in words
- // ~words = inBlock
+  //all w:NormalWord, b:Block | w->b in inBlock <=> b->w in words
+  ~words = inBlock
 }
 
 pred mm_init {
@@ -84,33 +84,43 @@ pred mm_init {
 pred can_malloc[b:Block, size:Int] {
   b.status = Free
   #b.words >= add[size,1]
-  //no b1:Block | #b1.words >= add[size,1] and b1 in b.^prede
+  no b1:Block | #b1.words >= add[size,1] and b1 in b.^prede and b1.status=Free
 }
 
 pred allocate [b:Block, x:Int] {
    // Case 1: No splitting required 
   not (#(b.words) > add[x, 1]) => {
-    b.status' = Alloc
+    status' = status + b->Alloc - b->Free
+    prede' = prede
+    succ' = succ
+    inBlock' = ~words'
+    words' = words
+    Block' = Block
   }
 
    //Case 2: Splitting required, new block created 
   #(b.words) > add[x, 1] => {
-    //b.status' = Alloc
-    //#(b.words') = add[x,1]
-    //no b.words'
     one disj y,z:Block' | y not in Block and y in Block' and z in Block' and z not in Block and {
-      y.status' = Alloc
-      z.status'=Free
-      no b.words'
+      //y.status' = Alloc
+      //z.status'=Free
       Block' = Block + y + z - b
+      words' = words - b->b.words + y->y.words' + z->z.words'
       #(y.words') = add[x,1]
       b.words = y.words' + z.words'
-      z.words' = b.words - y.words'
       inBlock' = ~words'
+      status' = status + y->Alloc + z->Free - b->Free
 
       // Update block succession
-      succ' = succ + y->z - b->b.succ + z->b.succ
-      prede' = prede + z->y - b->b.prede + y->b.prede
+      //y.succ' = z
+      //y.prede' = b.prede
+      //z.prede' = y
+      //succ' = ~prede'
+      //some b.prede => prede' = 
+      //some b.succ => z.succ' = b.succ
+      //z.succ' = b.succ
+      succ' = succ + y->z - b->b.succ + z->b.succ + b.prede->y - b.prede->b
+      prede' = ~succ'
+      //prede' = prede + z->y - b->b.prede + y->b.prede
       
       //Fix the order of allocated words
       // There's no word in z that precedes a word in y
@@ -121,44 +131,69 @@ pred allocate [b:Block, x:Int] {
   }
 }
 
-pred coalesce {
-  some disj b1,b2:Block | b2 = b1.succ and b1.status = Free and b2.status = Free => {
-    one x:Block' | x not in Block and x in Block' and {
-      status' = status - b1->Free - b2->Free + x->Free
-      Block' = Block - b1 - b2 + x
-      x.words' = b1.words + b2.words
-    }
+pred free {
+  one b1:Block | b1.status = Alloc and {
+    status' = status + b1->Free - b1->Alloc
+    Block' = Block
+    prede' = prede
+    succ' = succ
+    words' = words
+    inBlock' = inBlock
   }
 }
 
-pred free {
-  one b1:Block | b1.status = Alloc and status' = status + b1->Free
-  //Block' = Block
-  //prede' = prede
-  //succ' = succ
-  //words' = words
+pred coalesce {
+  some disj b1,b2:Block | b2 = b1.succ and b1.status = Free and b2.status = Free => {
+    one x:Block' | x not in Block and x in Block' and {
+      //status' = status - b1->Free - b2->Free + x->Free
+      Block' = Block - b1 - b2 + x
+      //x.words' = b1.words + b2.words
+      //inBlock' = ~words'
+      //prede' = prede - b1->b1.prede - b2->b1 + x->b1.prede
+      //succ' = succ - b1->b2 - b2->b2.succ + x->b2.succ - b1.prede->b1 + b1.prede->x
+      //prede' = ~succ'
+    }
+  }
+  no disj b1,b2:Block | (b2 = b1.succ and b1.status = Free and b2.status = Free) => doNothing
 }
 
 pred mm_malloc [x:Int] {
 -- preconditions
   some b:Block | can_malloc[b, x] and {
    allocate[b,x]
-  //b.status' = Alloc
-   pre' = pre
-   nex' = nex
- }
+  }
 }
 
-run {mm_init and mm_malloc[3] and after free
-        } for 8 but exactly 8 Word, 5 Int
+pred doNothing {
+  Block' = Block
+  status' = status
+  prede' = prede
+  succ' = succ
+  words' = words
+  inBlock' = inBlock
+}
 
 run {
-
-} for 4 Int
-// Only consecutive words can point to same block
-
-
-// mm_init()
+  mm_init
+  mm_malloc[1]
+  after mm_malloc[1]
+  after after free
+  after after after coalesce
+  //after after mm_malloc[1]
+  //after after free
+  //after after after coalesce
+  //after after after free
+  //after after after after coalesce
+  //after after after after free
+  //after after after coalesce
+  //after after after free
+  //after after doNothing
+  //after mm_malloc[1]
+  //after after mm_malloc[1]
+  //after after after mm_malloc[1]
+  //after after doNothing
+  //after after mm_malloc[1]
+} for 8 but exactly 8 Word, 5 Int
 
  
 
