@@ -1,8 +1,4 @@
 abstract sig Status {} 
-
-// extend works like in an object-oriented language. 
-// Alloc is a subset of Status. Free is a subset of Status.
-// "one" here means there will only be one atom of each.
 one sig Alloc extends Status {}
 one sig Free extends Status {}
 
@@ -17,9 +13,9 @@ sig NormalWord extends Word {
   var inBlock: lone Block,  
 }
 
-one sig HeapHeader extends Word {
-  //var first: lone Block
-}
+one sig HeapHeader extends Word {}
+one sig HeapFooter extends Word {}
+
 
 var sig Block {
   var status: Status, 
@@ -28,37 +24,14 @@ var sig Block {
   var words: set NormalWord
 }
 
-one sig HeapFooter extends Word {}
-
-sig HeaderWord extends NormalWord {}
-
-/*
-sig HeaderWord extends Word{
-  inBlock: lone Block,
-  size: Int
-}
-
-sig FooterWord extends Word{
-  inBlock: lone Block,
-  size: Int
-}*/
-
-// prede: relation Block -> Block 
-// succ: relation Block -> Block
-
-// prede and succ are each a subset of Block x Block
-
-
 fact WordSuccession {
-  // A more verbose way to write the following statement:
-  //all a, b : Block | a->b in prede <=> b->a in succ
-
-  // Relational operator: ~ is transpose (switch order)
   ~prede = succ
   ~pre = nex
   all disj x,y : NormalWord | y in x.^nex or y in x.^pre  // connected 
+  // HeapHeader is first
   no HeapHeader.pre
   all x: NormalWord | x in HeapHeader.^nex
+  // HeapFooter is last
   no HeapFooter.nex
   all x: NormalWord | x in HeapFooter.^pre
 }
@@ -72,13 +45,11 @@ pred OneBlockPerWord {
 
 pred mm_init {
   one Block
-  no HeaderWord
   Block.status = Free
   Block.words = NormalWord
   OneBlockPerWord
   no prede
   no succ
-  //#NormalWord > 4
 }
 
 pred can_malloc[b:Block, size:Int] {
@@ -101,8 +72,6 @@ pred allocate [b:Block, x:Int] {
    //Case 2: Splitting required, new block created 
   #(b.words) > add[x, 1] => {
     one disj y,z:Block' | y not in Block and y in Block' and z in Block' and z not in Block and {
-      //y.status' = Alloc
-      //z.status'=Free
       Block' = Block + y + z - b
       words' = words - b->b.words + y->y.words' + z->z.words'
       #(y.words') = add[x,1]
@@ -111,16 +80,8 @@ pred allocate [b:Block, x:Int] {
       status' = status + y->Alloc + z->Free - b->Free
 
       // Update block succession
-      //y.succ' = z
-      //y.prede' = b.prede
-      //z.prede' = y
-      //succ' = ~prede'
-      //some b.prede => prede' = 
-      //some b.succ => z.succ' = b.succ
-      //z.succ' = b.succ
       succ' = succ + y->z - b->b.succ + z->b.succ + b.prede->y - b.prede->b
       prede' = ~succ'
-      //prede' = prede + z->y - b->b.prede + y->b.prede
       
       //Fix the order of allocated words
       // There's no word in z that precedes a word in y
@@ -131,34 +92,81 @@ pred allocate [b:Block, x:Int] {
   }
 }
 
-pred free {
-  one b1:Block | b1.status = Alloc and {
-    status' = status + b1->Free - b1->Alloc
+
+/*
+pred free [b:Block] {
+  b.status = Alloc and {
+    status' = status + b->Free - b->Alloc
     Block' = Block
     prede' = prede
     succ' = succ
     words' = words
-    inBlock' = inBlock
+    inBlock' = inBlock  
+    
+    no disj b1,b2:Block | b2 = b1.succ and b1.status = Free and b2.status = Free => after doNothing
+    some disj b1,b2:Block |  b2 = b1.succ and b1.status = Free and b2.status = Free => {
+      after coalesce
+      after after coalesce
+    } 
+   
+    //some disj b1,b2:Block |  b2 = b1.succ and b1.status = Free and b2.status = Free => {
+     // after after coalesce
+    //}
   }
+} 
+
+pred coalesce {
+  some disj b1,b2:Block |  b2 = b1.succ and b1.status = Free and b2.status = Free and {
+    one x:Block' | x not in Block and x in Block' and {
+      status' = status - b1->Free - b2->Free + x->Alloc
+      Block' = Block - b1 - b2 + x
+      words' = words - b1->b1.words - b2->b2.words + x->b1.words + x->b2.words
+      x.words' = b1.words + b2.words
+      inBlock' = ~words'
+      succ' = succ - b1->b2 - b2->b2.succ + x->b2.succ - b1.prede->b1 + b1.prede->x
+      prede' = ~succ'
+    }
+  }  
+  //no disj b1,b2:Block | b2 = b1.succ and b1.status = Free and b2.status = Free => doNothing
+} */
+
+pred free [b:Block] {
+  b.status = Alloc => {
+    status' = status + b->Free - b->Alloc
+    Block' = Block
+    prede' = prede
+    succ' = succ
+    words' = words
+   
+    some disj b1,b2:Block |  b2 = b1.succ and b1.status = Free and b2.status = Free => {
+      after coalesce
+    } 
+    some disj b1,b2:Block |  b2 = b1.succ and b1.status = Free and b2.status = Free => {
+      after after coalesce
+    } 
+   /*
+  after coalesce
+  after after coalesce
+   */
+  }
+  b.status = Free => doNothing
+  
 }
 
 pred coalesce {
-  some disj b1,b2:Block | b2 = b1.succ and b1.status = Free and b2.status = Free => {
+  some disj b1,b2:Block |  b2 = b1.succ and b1.status = Free and b2.status = Free and {
     one x:Block' | x not in Block and x in Block' and {
-      //status' = status - b1->Free - b2->Free + x->Free
+      status' = status - b1->Free - b2->Free + x->Alloc
       Block' = Block - b1 - b2 + x
-      //x.words' = b1.words + b2.words
-      //inBlock' = ~words'
-      //prede' = prede - b1->b1.prede - b2->b1 + x->b1.prede
-      //succ' = succ - b1->b2 - b2->b2.succ + x->b2.succ - b1.prede->b1 + b1.prede->x
-      //prede' = ~succ'
+      words' = words - b1->b1.words - b2->b2.words + x->b1.words + x->b2.words
+      x.words' = b1.words + b2.words
+      succ' = succ - b1->b2 - b2->b2.succ + x->b2.succ - b1.prede->b1 + b1.prede->x
+      prede' = ~succ'
     }
-  }
-  no disj b1,b2:Block | (b2 = b1.succ and b1.status = Free and b2.status = Free) => doNothing
+  }  
+  //no disj b1,b2:Block | b2=b1.succ and b1.status = Free and b2.status = Free => doNothing
 }
-
 pred mm_malloc [x:Int] {
--- preconditions
   some b:Block | can_malloc[b, x] and {
    allocate[b,x]
   }
@@ -173,27 +181,45 @@ pred doNothing {
   inBlock' = inBlock
 }
 
+fact validTraces {
+  mm_init
+  always (
+    some i:Int | i<#NormalWord and mm_malloc[i] or
+    some b:Block | b.status = Alloc and free[b] or
+    doNothing
+  ) eventually (some b: Block | b.status = Alloc and free[b])
+} 
+//run validTraces for 10 but exactly 10 Word, 5 Int 
+
+
+assert noAdjFreeBlocks {
+  always (some b:Block | b.status = Alloc and free[b] => eventually(no disj b1,b2:Block | b1.succ = b2 and b1.status = Free and b2.status = Free))
+}
+ 
+check noAdjFreeBlocks for 8 but exactly 8 Word, 5 Int
+
+// Run to check that coalesce works on the case where three blocks should merge
 run {
   mm_init
   mm_malloc[1]
   after mm_malloc[1]
-  after after free
-  after after after coalesce
-  //after after mm_malloc[1]
-  //after after free
-  //after after after coalesce
-  //after after after free
-  //after after after after coalesce
-  //after after after after free
-  //after after after coalesce
-  //after after after free
-  //after after doNothing
-  //after mm_malloc[1]
-  //after after mm_malloc[1]
-  //after after after mm_malloc[1]
-  //after after doNothing
-  //after after mm_malloc[1]
+  after after mm_malloc[1]
+  after after after {one b1:Block | no b1.prede and b1.status = Alloc and free[b1]}
+  after after after after {one b2:Block | no b2.succ and b2.status = Alloc and free[b2]}
+  after after after after after {one b3:Block | b3.status = Alloc and free[b3]}  
 } for 8 but exactly 8 Word, 5 Int
 
- 
+run {
+  mm_init
+  mm_malloc[1]
+  after (some b:Block | b.status = Alloc and free[b])
+} for 8 but exactly 8 Word, 5 Int
+
+/*
+  after mm_malloc[1]
+
+  after after mm_malloc[1]
+  after after after {one b1:Block | no b1.prede and b1.status = Alloc and free[b1]}
+  after after after after {one b2:Block | no b2.succ and b2.status = Alloc and free[b2]}
+  after after after after after {one b3:Block | b3.status = Alloc and free[b3]}  */
 
