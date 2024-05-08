@@ -101,31 +101,6 @@ pred allocate [b:Block, x:Int] {
   }
 }
 
-// Free given block
-
-/*
-pred free [b:Block] {
-  b.status = Alloc and {
-    status' = status + b->Free - b->Alloc
-    Block' = Block
-    prede' = prede
-    succ' = succ
-    words' = words
-    inBlock' = ~words'
-    //after (some disj b1,b2:Block | b1->b2 in succ and b1.status = Free and b2.status = Free => coalesce [b1,b2])
-    //some disj b1,b2:Block' |  b1->b2 in succ' and b1.status' = Free and b2.status' = Free => {
-      //after coalesce
-    //} 
-    //some disj b1,b2:Block'' |  b1->b2 in succ'' and b1.status'' = Free and b2.status'' = Free => {
-      //eafter after coalesce
-    //} 
-   
-  after coalesce
-  after after coalesce 
-  }
-  //b.status = Free => after doNothing
-} */
-
 pred free [b:Block] {
   // Assumes that the given block is already free
   //b.prede.status = Alloc or no b.prede => {
@@ -173,23 +148,6 @@ pred free [b:Block] {
     }
 }
 
-
-// Coalesce adjacent free blocks into one free block
-pred coalesce{
-  some disj b1,b2:Block |  b1->b2 in succ and b1.status = Free and b2.status = Free => {
-    one x:Block' | x not in Block and x in Block' and {
-      status' = status - b1->Free - b2->Free + x->Free
-      Block' = Block - b1 - b2 + x
-      words' = words - b1->b1.words - b2->b2.words + x->b1.words + x->b2.words
-      x.words' = b1.words + b2.words
-      x.prede' = b1.prede
-      succ' = succ - b1.prede->b1 - b1->b2 - b2->b2.succ + b1.prede->x + x->b2.succ
-      inBlock' = ~words'
-    }
-  }  
-  no disj b1,b2:Block | b1->b2 in succ and b1.status = Free and b2.status = Free => doNothing
-}
-
 pred doNothing {
   Block' = Block
   status' = status
@@ -199,7 +157,7 @@ pred doNothing {
   inBlock' = inBlock
 }
 
-pred validTraces {
+fact validTraces {
   mm_init
   always (
     some i:Int | i<#NormalWord and mm_malloc[i] or
@@ -216,6 +174,8 @@ assert noAdjFreeBlocks {
 }
  
 check noAdjFreeBlocks for 8 but exactly 8 Word, 5 Int
+
+run {} for 8 but exactly 8 Word, 5 Int
 
 // Testing each case of free/coalesce
 
@@ -252,56 +212,46 @@ run coalesceThreeBlocks {
   after mm_malloc[1]
   after after (one b1:Block | no b1.prede and b1.status = Alloc and free[b1])
   after after after (one b2:Block | one b2.prede and one b2.succ and free[b2])
-  /*
-  #Block = 3
-  #(status.Free) = 2
-  #(status.Alloc) = 1
-  one b1:Block | b1.status = Free and no b1.prede and one b1.succ and #(b1.words) = 2 and all w:b1.words | all w2:b1.succ.words | no w2 in b1.words.pre
-  Block.words = NormalWord
-  OneBlockPerWord
-  no prede
-  no succ
- */
 } for 8 but exactly 8 Word, 5 Int
 
-
-
-run {
-  mm_init
-  mm_malloc[1]
-  after mm_malloc[1]
-  //after (one b1:Block | b1.status = Alloc and free[b1])
-  //after after coalesce
-  //after after after doNothing
-  //after after coalesce
-  //after after (some disj b1,b2:Block | b1->b2 in succ and b1.status = Free and b2.status = Free and coalesce[b1,b2])
-  //after after after mm_malloc[5]
- // after after after after doNothing
-  //after after mm_malloc[5]
-  //after after after doNothing
-  /*
-  after mm_malloc[1]
-  after after mm_malloc[1]
-  after after after {one b1:Block | no b1.prede and b1.status = Alloc and free[b1]}
-  after after after after {one b2:Block | no b2.succ and b2.status = Alloc and free[b2]}
-  after after after after after {one b3:Block | b3.status = Alloc and free[b3]}
-  after after after after after after coalesce
-  after after after after after after after coalesce */
-} for 8 but exactly 8 Word, 5 Int
-
-
-
-run {
-  mm_init
-  mm_malloc[1]
-  after (some b:Block | b.status = Alloc and free[b])
-} for 8 but exactly 8 Word, 5 Int
+//=========ORIGINAL (not working) VERSIONS OF FREE AND COALESCE===========//
+// Original free which used coalesce pred
 
 /*
-  after mm_malloc[1]
+pred free [b:Block] {
+  b.status = Alloc and {
+    status' = status + b->Free - b->Alloc
+    Block' = Block
+    prede' = prede
+    succ' = succ
+    words' = words
+    inBlock' = ~words'
+    //after (some disj b1,b2:Block | b1->b2 in succ and b1.status = Free and b2.status = Free => coalesce [b1,b2])
+    //some disj b1,b2:Block' |  b1->b2 in succ' and b1.status' = Free and b2.status' = Free => {
+      //after coalesce
+    //} 
+    //some disj b1,b2:Block'' |  b1->b2 in succ'' and b1.status'' = Free and b2.status'' = Free => {
+      //eafter after coalesce
+    //} 
+   
+  after coalesce
+  after after coalesce 
+  }
+  //b.status = Free => after doNothing
+} */
 
-  after after mm_malloc[1]
-  after after after {one b1:Block | no b1.prede and b1.status = Alloc and free[b1]}
-  after after after after {one b2:Block | no b2.succ and b2.status = Alloc and free[b2]}
-  after after after after after {one b3:Block | b3.status = Alloc and free[b3]}  */
-
+// Coalesce adjacent free blocks into one free block - doesn't work but left in to show the process
+pred coalesce{
+  some disj b1,b2:Block |  b1->b2 in succ and b1.status = Free and b2.status = Free => {
+    one x:Block' | x not in Block and x in Block' and {
+      status' = status - b1->Free - b2->Free + x->Free
+      Block' = Block - b1 - b2 + x
+      words' = words - b1->b1.words - b2->b2.words + x->b1.words + x->b2.words
+      x.words' = b1.words + b2.words
+      x.prede' = b1.prede
+      succ' = succ - b1.prede->b1 - b1->b2 - b2->b2.succ + b1.prede->x + x->b2.succ
+      inBlock' = ~words'
+    }
+  }  
+  no disj b1,b2:Block | b1->b2 in succ and b1.status = Free and b2.status = Free => doNothing
+}
