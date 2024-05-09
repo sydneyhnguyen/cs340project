@@ -102,10 +102,8 @@ pred allocate [b:Block, x:Int] {
 }
 
 pred free [b:Block] {
-  // Assumes that the given block is already free
-  //b.prede.status = Alloc or no b.prede => {
+  // Assumes that the given block is already Alloc
     // Case where no coalescing happens
-    //b.succ.status = Alloc or no b.succ => {
     (b.prede.status = Alloc or no b.prede) and (b.succ.status = Alloc or no b.succ) => {
       status' = status - b->Alloc + b->Free
       Block' = Block
@@ -115,7 +113,6 @@ pred free [b:Block] {
       succ' = succ
     }
     // Coalesce with successor, keeping b and removing the successor
-    //b.succ.status = Free => {
     (b.prede.status = Alloc or no b.prede) and b.succ.status = Free => {
       status' = status - b.succ->Free + b->Free - b->Alloc
       Block' = Block - b.succ
@@ -123,11 +120,8 @@ pred free [b:Block] {
       inBlock' = ~words'
       succ' = succ - b.succ->b.succ.succ - b->b.succ + b->b.succ.succ
       prede' = ~succ'
-    //}
   }
-  //b.prede.status = Free => {
     // Coalesce with predecessor, keeping predecessor and removing b
-    //b.succ.status = Alloc or no b.succ => {
     b.prede.status = Free and (b.succ.status = Alloc or no b.succ) => {
       status' = status - b->Alloc
       Block' = Block - b
@@ -137,7 +131,6 @@ pred free [b:Block] {
       prede' = ~succ'
     }
     //Coalesce with predecessor and successor, keeping only b
-    //b.succ.status = Free => {
     b.prede.status = Free and b.succ.status = Free => {
       status' = status - b.prede->Free - b.succ->Free + b->Free - b->Alloc
       Block' = Block - b.prede - b.succ
@@ -168,13 +161,14 @@ fact validTraces {
 //run validTraces for 10 but exactly 10 Word, 5 Int 
 
 // Check that after free, no adjacent free blocks remain (coalesce works properly)
-// To run this, change the above pred to a fact
 assert noAdjFreeBlocks {
   always (some b:Block | b.status = Alloc and free[b] => eventually(no disj b1,b2:Block | b1.succ = b2 and b1.status = Free and b2.status = Free))
 }
  
 check noAdjFreeBlocks for 8 but exactly 8 Word, 5 Int
 
+
+// Checking validTraces
 run {} for 8 but exactly 8 Word, 5 Int
 
 // Testing each case of free/coalesce

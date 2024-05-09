@@ -1,14 +1,16 @@
 # cs340project
 
 
-## How to install required tools (you can link to tool pages for the main instructions).
+## How to install required tools 
 	
 	Alloy download: https://alloytools.org/download.html 
 	Sterling download: https://sterling-js.github.io/download/ 
 
 ## How to run the project.
 
-	To run our project, you can execute our run statements and our check statement to view temporal instances of our model. The visualizations can be recreated using Sterling’s visualizer depending on how you would like to visualize the instances.To visualize temporal instances, you must go into the XML file created from a run statement and create individual XML files for each instance ensuring that the heading & footer of the original XML file is present in each instance XML, as well as edit “backloop” to 0 and “traces; to 1.
+	To run our project, you can execute our run statements and our check statement to view temporal instances of our model. Specifically, there are four run statements, each checking one scenario in coalesce - coalescing with a predecessor block, coalescing with a successor block, freeing with no coalescing, and coalescing three blocks into one. The check statement also checks the assertion that there are never free adjacent blocks after calling free.
+	
+	The visualizations can be recreated using Sterling’s visualizer depending on how you would like to visualize the instances.To visualize temporal instances, you must go into the XML file created from a run statement and create individual XML files for each instance ensuring that the heading & footer of the original XML file is present in each instance XML, as well as edit “backloop” to 0 and “traces; to 1.
 
 ## The general problem our project is tackling
 
@@ -17,9 +19,9 @@ After we decided on memory allocation as our project topic, we also added anothe
 
 ## Tradeoffs and attempted approaches
 
-We first tried to represent the behavior of malloc by including block headers and block footers as extending Block, however, we realized that this approach was quite complicated, and we were able to model this behavior by having blocks keep track of their status, size, predecessor, and successor. There were many approaches made for the coalesce function, 
+We first tried to represent the behavior of malloc by including block headers and block footers as extending Block, however, we realized that this approach was quite complicated, and we were able to model this behavior by having blocks keep track of their status, size, predecessor, and successor. There were many approaches made for the coalesce function - at first, it was modeled as a helper pred inside the free pred, and then we attempted to make it a separate pred that was always called right after free. It was difficult to enumerate the cases in this way and also deal with the free pred taking up two timesteps, though, so we decided to spell out each case inside the free pred itself. While the code looks uglier, it turned out more correct this way.
 
-What assumptions did you make about scope? What are the limits of your model?
+## What assumptions did you make about scope? What are the limits of your model?
 	
 We made a number of assumptions about scope to simplify modeling the behavior of malloc. One of our major design choices was deciding to malloc in words which represent 8 bytes instead of trying to malloc bytes directly themselves. This ensured that we could focus on the higher level behavior of malloc instead of tryung to manipulate integer values in Alloy. In addition to this, we are assuming that any call to malloc is aligned to 8 bytes, and we are accounting for block headers by adding 1 word to the size of words that we are hoping to malloc. This additional word represents the block header. We also assume that all calls to malloc and free are legal, i.e. malloc is called only when there exists some block that can accommodate the allocation, and free is called only when there is some allocated block to free.
 
